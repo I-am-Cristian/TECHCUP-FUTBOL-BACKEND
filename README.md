@@ -139,5 +139,6 @@ TECHCUP busca transformar la organización del torneo universitario de un proces
 - la transparencia en resultados
 - la comunicación entre participantes
 - la gestión de equipos y partidos
-
+# Mockup
+https://enjoy-slush-87404811.figma.site/
 ---
