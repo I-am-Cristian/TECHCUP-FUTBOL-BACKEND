@@ -1,17 +1,22 @@
 package edu.dosw.techcup.service;
 
-import edu.dosw.techcup.model.audit.Action;
-import edu.dosw.techcup.model.audit.AuditAction;
-import edu.dosw.techcup.model.user.User;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import edu.dosw.techcup.model.audit.Action;
+import edu.dosw.techcup.model.audit.AuditAction;
+import edu.dosw.techcup.model.user.Manager;
 
 public class AuditActionServiceTest {
 
     private AuditActionService auditActionService;
+
+    
+    private static final Manager USER_A = new Manager(1L, "usera@escuelaing.edu.co", "pass");
+    private static final Manager USER_B = new Manager(2L, "userb@gmail.com", "pass");
+    private static final Manager USER_C = new Manager(3L, "userc@escuelaing.edu.co", "pass");
+
     @BeforeEach
     void setUp() {
         auditActionService = new AuditActionService();
@@ -20,7 +25,7 @@ public class AuditActionServiceTest {
     @Test
     public void shouldRegisterFirstAction() {
         //Having
-        AuditAction firstAction = new AuditAction(100010010, Mockito.mock(User.class), Action.LOGIN);
+        AuditAction firstAction = new AuditAction(100010010, USER_A, Action.LOGIN);
         firstAction.setDetails("Esto es una prueba y el usuario utilizado es un mock");
 
         //When
@@ -34,14 +39,15 @@ public class AuditActionServiceTest {
     @Test
     public void shouldRegisterAction() {
         //Having
-        AuditAction action1 = new AuditAction(56565656, Mockito.mock(User.class), Action.CHANGE_PAYMENT_STATE);
-        AuditAction action2 = new AuditAction(1234567, Mockito.mock(User.class), Action.LOGOUT);
+        AuditAction action1 = new AuditAction(56565656, USER_A, Action.CHANGE_PAYMENT_STATE);
+        AuditAction action2 = new AuditAction(1234567, USER_B, Action.LOGOUT);
         auditActionService.registerAuditAction(action1);
         auditActionService.registerAuditAction(action2);
-        AuditAction newAction = new AuditAction(77777777, Mockito.mock(User.class), Action.MATCH_RESULT_CHANGE);
+        AuditAction newAction = new AuditAction(77777777, USER_C, Action.MATCH_RESULT_CHANGE);
 
         //When
         auditActionService.registerAuditAction(newAction);
+
         //Then
         assertEquals(3, auditActionService.getAuditListSize());
         assertEquals(newAction, auditActionService.getLastRegister());
@@ -62,8 +68,8 @@ public class AuditActionServiceTest {
     @Test
     public void shouldNotRegisterDuplicatedId() {
         //Having
-        AuditAction action1 = new AuditAction(11223344, Mockito.mock(User.class), Action.CHANGE_PAYMENT_STATE);
-        AuditAction action2 = new AuditAction(11223344, Mockito.mock(User.class), Action.LOGOUT);
+        AuditAction action1 = new AuditAction(11223344, USER_A, Action.CHANGE_PAYMENT_STATE);
+        AuditAction action2 = new AuditAction(11223344, USER_B, Action.LOGOUT);
         auditActionService.registerAuditAction(action1);
 
         //When
@@ -75,9 +81,7 @@ public class AuditActionServiceTest {
 
     @Test
     public void shouldReturnEmptyLogs() {
-        //Having
-
-        //When
+        //Having / When
         auditActionService.getAuditList();
 
         //Then
@@ -87,10 +91,10 @@ public class AuditActionServiceTest {
     @Test
     public void shouldReturnLogs() {
         //Having
-        AuditAction action1 = new AuditAction(11111111, Mockito.mock(User.class), Action.LOGIN);
-        AuditAction action2 = new AuditAction(22222222, Mockito.mock(User.class), Action.CHANGE_PAYMENT_STATE);
-        AuditAction action3 = new AuditAction(33333333, Mockito.mock(User.class), Action.MATCH_RESULT_CHANGE);
-        AuditAction action4 = new AuditAction(44444444, Mockito.mock(User.class), Action.LOGOUT);
+        AuditAction action1 = new AuditAction(11111111, USER_A, Action.LOGIN);
+        AuditAction action2 = new AuditAction(22222222, USER_B, Action.CHANGE_PAYMENT_STATE);
+        AuditAction action3 = new AuditAction(33333333, USER_C, Action.MATCH_RESULT_CHANGE);
+        AuditAction action4 = new AuditAction(44444444, USER_A, Action.LOGOUT);
         auditActionService.registerAuditAction(action1);
         auditActionService.registerAuditAction(action2);
         auditActionService.registerAuditAction(action3);
