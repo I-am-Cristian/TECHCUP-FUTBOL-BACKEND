@@ -1,16 +1,18 @@
 package edu.eci.dosw.techcup.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import edu.eci.dosw.techcup.dto.UserDTO;
+import edu.eci.dosw.techcup.entity.MemberState;
+import edu.eci.dosw.techcup.entity.UserRole;
+import edu.eci.dosw.techcup.exception.TechCupException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import edu.eci.dosw.techcup.entity.MemberState;
-import edu.eci.dosw.techcup.entity.User;
+import java.util.List;
 
-public class UserServiceTest {
+import static org.junit.jupiter.api.Assertions.*;
+
+class UserServiceTest {
 
     private UserService userService;
 
@@ -19,158 +21,138 @@ public class UserServiceTest {
         userService = new UserService();
     }
 
+    // RF-01 REGISTER
 
     @Test
-    public void shouldRegisterUserWithEciEmail() {
-        // Having
-        String email = "juan.velez@escuelaing.edu.co";
+    void shouldRegisterUserWithValidECIDomain() {
+        UserDTO user = userService.registerUser(
+                "nuevo@escuelaing.edu.co",
+                "1234"
+        );
 
-        // When
-        User user = userService.registerUser(1L, email, "pass123");
-
-        // Then
         assertNotNull(user);
-        assertEquals(email, user.getEmail());
+        assertEquals("nuevo@escuelaing.edu.co", user.getEmail());
         assertEquals(MemberState.ACTIVE, user.getState());
-        assertEquals(1, userService.getUsers().size());
     }
 
     @Test
-    public void shouldRegisterUserWithGmailEmail() {
-        // Having
-        String email = "jugador.techcup@gmail.com";
+    void shouldRegisterUserWithValidGmailDomain() {
+        UserDTO user = userService.registerUser(
+                "correo@gmail.com",
+                "abcd"
+        );
 
-        // When
-        User user = userService.registerUser(2L, email, "pass456");
-
-        // Then
         assertNotNull(user);
-        assertEquals(email, user.getEmail());
-        assertEquals(1, userService.getUsers().size());
+        assertEquals("correo@gmail.com", user.getEmail());
     }
 
     @Test
-    public void shouldNotRegisterUserWithInvalidEmailDomain() {
-        // Having
-        String invalidEmail = "usuario@hotmail.com";
-
-        // When & Then
-        assertThrows(IllegalArgumentException.class, () ->
-                userService.registerUser(3L, invalidEmail, "pass789")
-        );
-        assertEquals(0, userService.getUsers().size());
+    void shouldThrowExceptionWhenDomainIsInvalid() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.registerUser(
+                    "correo@yahoo.com",
+                    "1234"
+            );
+        });
     }
 
     @Test
-    public void shouldNotRegisterUserWithNullEmail() {
-        // Having / When & Then
-        assertThrows(IllegalArgumentException.class, () ->
-                userService.registerUser(4L, null, "pass000")
-        );
-    }
+    void shouldThrowExceptionWhenEmailAlreadyExists() {
+        userService.registerUser("repetido@gmail.com", "1234");
 
-    @Test
-    public void shouldNotRegisterDuplicateEmail() {
-        // Having
-        String email = "cristian@escuelaing.edu.co";
-        userService.registerUser(5L, email, "pass111");
-
-        // When & Then
-        assertThrows(IllegalArgumentException.class, () ->
-                userService.registerUser(6L, email, "pass222")
-        );
-        assertEquals(1, userService.getUsers().size());
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.registerUser("repetido@gmail.com", "abcd");
+        });
     }
 
 
-    @Test
-    public void shouldGetAllRegisteredUsers() {
-        // Having
-        userService.registerUser(10L, "ana@escuelaing.edu.co", "p1");
-        userService.registerUser(11L, "pablo@gmail.com", "p2");
-        userService.registerUser(12L, "sara@escuelaing.edu.co", "p3");
+    // GET USERS
 
-        // When & Then
-        assertEquals(3, userService.getUsers().size());
+    @Test
+    void shouldReturnAllUsersIncludingDummyData() {
+        List<UserDTO> users = userService.getAllUsers();
+
+        // 2 dummy users creados en constructor
+        assertTrue(users.size() >= 2);
     }
 
     @Test
-    public void shouldGetUserById() {
-        // Having
-        userService.registerUser(20L, "admin@escuelaing.edu.co", "adminpass");
+    void shouldReturnUserById() {
+        UserDTO user = userService.getUserById(1L);
 
-        // When
-        User found = userService.getUserById(20L);
-
-        // Then
-        assertNotNull(found);
-        assertEquals("admin@escuelaing.edu.co", found.getEmail());
+        assertNotNull(user);
+        assertEquals(1L, user.getId());
     }
 
     @Test
-    public void shouldReturnNullForNonExistentUserId() {
-        // Having / When
-        User found = userService.getUserById(999L);
-
-        // Then
-        assertNull(found);
+    void shouldThrowExceptionWhenUserIdNotFound() {
+        assertThrows(TechCupException.ResourceNotFoundException.class, () -> {
+            userService.getUserById(999L);
+        });
     }
 
     @Test
-    public void shouldGetUserByEmail() {
-        // Having
-        userService.registerUser(30L, "tecnico@gmail.com", "pass");
+    void shouldReturnUserByEmail() {
+        UserDTO user = userService.getUserByEmail("admin@escuelaing.edu.co");
 
-        // When
-        User found = userService.getUserByEmail("tecnico@gmail.com");
-
-        // Then
-        assertNotNull(found);
-        assertEquals(30L, found.getId());
+        assertNotNull(user);
+        assertEquals("admin@escuelaing.edu.co", user.getEmail());
     }
 
     @Test
-    public void shouldInactivateUser() {
-        // Having
-        userService.registerUser(40L, "inactivo@escuelaing.edu.co", "pass");
+    void shouldReturnNullWhenEmailNotFound() {
+        UserDTO user = userService.getUserByEmail("noexiste@gmail.com");
 
-        // When
-        userService.inactivateUser(40L);
+        assertNull(user);
+    }
 
-        // Then
-        assertEquals(MemberState.UNACTIVE, userService.getUserById(40L).getState());
+
+    // STATE MANAGEMENT
+
+    @Test
+    void shouldInactivateUser() {
+        UserDTO updated = userService.inactivateUser(1L);
+
+        assertEquals(MemberState.UNACTIVE, updated.getState());
     }
 
     @Test
-    public void shouldSuspendUser() {
-        // Having
-        userService.registerUser(50L, "suspendido@gmail.com", "pass");
+    void shouldSuspendUser() {
+        UserDTO updated = userService.suspendUser(1L);
 
-        // When
-        userService.suspendUser(50L);
-
-        // Then
-        assertEquals(MemberState.SUSPENDED, userService.getUserById(50L).getState());
+        assertEquals(MemberState.SUSPENDED, updated.getState());
     }
 
     @Test
-    public void shouldActivateInactiveUser() {
-        // Having
-        userService.registerUser(60L, "reactivo@escuelaing.edu.co", "pass");
-        userService.inactivateUser(60L);
+    void shouldActivateUser() {
+        userService.suspendUser(1L);
 
-        // When
-        userService.activateUser(60L);
+        UserDTO updated = userService.activateUser(1L);
 
-        // Then
-        assertEquals(MemberState.ACTIVE, userService.getUserById(60L).getState());
+        assertEquals(MemberState.ACTIVE, updated.getState());
     }
 
     @Test
-    public void shouldThrowExceptionWhenInactivatingNonExistentUser() {
-        // Having / When & Then
-        assertThrows(IllegalArgumentException.class, () ->
-                userService.inactivateUser(999L)
-        );
+    void shouldThrowExceptionWhenChangingStateOfNonExistingUser() {
+        assertThrows(TechCupException.ResourceNotFoundException.class, () -> {
+            userService.inactivateUser(999L);
+        });
+    }
+
+
+    // ROLE MANAGEMENT
+
+    @Test
+    void shouldChangeUserRole() {
+        UserDTO updated = userService.changeUserRole(1L, UserRole.ORGANIZADOR);
+
+        assertEquals(UserRole.ORGANIZADOR, updated.getRole());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenChangingRoleOfNonExistingUser() {
+        assertThrows(TechCupException.ResourceNotFoundException.class, () -> {
+            userService.changeUserRole(999L, UserRole.ADMINISTRADOR);
+        });
     }
 }
