@@ -1,7 +1,7 @@
 package edu.eci.dosw.techcup.entity;
 
 public enum TournamentState {
-    MOCK,
+    DRAFT,
     ACTIVE,
     IN_PROGRESS,
     ENDED
