@@ -1,19 +1,17 @@
 package edu.eci.dosw.techcup.service;
 
-import edu.eci.dosw.techcup.entity.*;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import edu.eci.dosw.techcup.entity.AuditAction;
+
 @Service
 public class AuditActionService {
 
-    //Attributes
-    private Map<Long, AuditAction> logs = new LinkedHashMap<Long, AuditAction>();
+    private Map<Long, AuditAction> logs = new LinkedHashMap<>();
 
-    //Methods
     public void registerAuditAction(AuditAction a) {
         if (a != null) logs.put(a.getId(), a);
     }
