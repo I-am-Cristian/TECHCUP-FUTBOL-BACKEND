@@ -12,7 +12,6 @@ public class AuditActionServiceTest {
 
     private AuditActionService auditActionService;
 
-    
     private static final Manager USER_A = new Manager(1L, "usera@escuelaing.edu.co", "pass");
     private static final Manager USER_B = new Manager(2L, "userb@gmail.com", "pass");
     private static final Manager USER_C = new Manager(3L, "userc@escuelaing.edu.co", "pass");
@@ -24,73 +23,73 @@ public class AuditActionServiceTest {
 
     @Test
     public void shouldRegisterFirstAction() {
-        //Having
+        // Having
         AuditAction firstAction = new AuditAction(100010010, USER_A, Action.LOGIN);
-        firstAction.setDetails("Esto es una prueba y el usuario utilizado es un mock");
+        firstAction.setDetails("Primera acción de prueba");
 
-        //When
+        // When
         auditActionService.registerAuditAction(firstAction);
 
-        //Then
+        // Then
         assertEquals(1, auditActionService.getAuditListSize());
         assertEquals(firstAction, auditActionService.getLastRegister());
     }
 
     @Test
     public void shouldRegisterAction() {
-        //Having
+        // Having
         AuditAction action1 = new AuditAction(56565656, USER_A, Action.CHANGE_PAYMENT_STATE);
         AuditAction action2 = new AuditAction(1234567, USER_B, Action.LOGOUT);
         auditActionService.registerAuditAction(action1);
         auditActionService.registerAuditAction(action2);
         AuditAction newAction = new AuditAction(77777777, USER_C, Action.MATCH_RESULT_CHANGE);
 
-        //When
+        // When
         auditActionService.registerAuditAction(newAction);
 
-        //Then
+        // Then
         assertEquals(3, auditActionService.getAuditListSize());
         assertEquals(newAction, auditActionService.getLastRegister());
     }
 
     @Test
-    public void shouldNotRegisterInvalidUser() {
-        //Having
+    public void shouldNotRegisterNullAction() {
+        // Having
         AuditAction invalidAction = null;
 
-        //When
+        // When
         auditActionService.registerAuditAction(invalidAction);
 
-        //Then
+        // Then
         assertEquals(0, auditActionService.getAuditListSize());
     }
 
     @Test
     public void shouldNotRegisterDuplicatedId() {
-        //Having
+        // Having
         AuditAction action1 = new AuditAction(11223344, USER_A, Action.CHANGE_PAYMENT_STATE);
         AuditAction action2 = new AuditAction(11223344, USER_B, Action.LOGOUT);
         auditActionService.registerAuditAction(action1);
 
-        //When
+        // When
         auditActionService.registerAuditAction(action2);
 
-        //Then
+        // Then
         assertEquals(1, auditActionService.getAuditListSize());
     }
 
     @Test
     public void shouldReturnEmptyLogs() {
-        //Having / When
+        // When
         auditActionService.getAuditList();
 
-        //Then
+        // Then
         assertEquals(0, auditActionService.getAuditListSize());
     }
 
     @Test
     public void shouldReturnLogs() {
-        //Having
+        // Having
         AuditAction action1 = new AuditAction(11111111, USER_A, Action.LOGIN);
         AuditAction action2 = new AuditAction(22222222, USER_B, Action.CHANGE_PAYMENT_STATE);
         AuditAction action3 = new AuditAction(33333333, USER_C, Action.MATCH_RESULT_CHANGE);
@@ -100,14 +99,14 @@ public class AuditActionServiceTest {
         auditActionService.registerAuditAction(action3);
         auditActionService.registerAuditAction(action4);
 
-        //When
+        // When
         auditActionService.getAuditList();
 
-        //Then
+        // Then
         assertEquals(4, auditActionService.getAuditListSize());
+        assertEquals(action1, auditActionService.getAuditAction(11111111));
+        assertEquals(action2, auditActionService.getAuditAction(22222222));
         assertEquals(action3, auditActionService.getAuditAction(33333333));
         assertEquals(action4, auditActionService.getAuditAction(44444444));
-        assertEquals(action2, auditActionService.getAuditAction(22222222));
-        assertEquals(action1, auditActionService.getAuditAction(11111111));
     }
 }
