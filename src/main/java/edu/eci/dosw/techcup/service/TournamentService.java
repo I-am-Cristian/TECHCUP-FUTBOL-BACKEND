@@ -2,11 +2,13 @@ package edu.eci.dosw.techcup.service;
 
 import edu.eci.dosw.techcup.entity.Tournament;
 import edu.eci.dosw.techcup.entity.TournamentState;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@Service
 public class TournamentService {
     private Map<Long, Tournament> tournaments;
 
