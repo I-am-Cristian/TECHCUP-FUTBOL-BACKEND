@@ -2,6 +2,8 @@ package edu.eci.dosw.techcup.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tournaments")
@@ -29,6 +31,13 @@ public class Tournament {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private TournamentState state;
+
+    @ManyToMany
+    @JoinTable(name = "tournament_players",
+        joinColumns = @JoinColumn(name = "tournament_id"),
+        inverseJoinColumns = @JoinColumn(name = "player_id")
+    )
+    private List<Player> players = new ArrayList<Player>();
 
     public Tournament() {}
 
