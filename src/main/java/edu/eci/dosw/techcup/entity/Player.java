@@ -2,6 +2,9 @@ package edu.eci.dosw.techcup.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "players")
 public class Player extends User {
@@ -28,7 +31,10 @@ public class Player extends User {
     @Column(nullable = false)
     private boolean available;
 
-    public Player() {}
+    @ManyToMany(mappedBy = "players")
+    private List<Tournament> tournaments = new ArrayList<>();
+
+ ;   public Player() {}
 
     public Player(Long id, String name, int dorsal, Position position,
                   ParticipantType participantType) {
