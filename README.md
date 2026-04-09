@@ -450,10 +450,80 @@ Ver resultados en `http://localhost:9000`
 
 ---
 
+# Lab 8 
+## Entidades del dominio seleccionadas
+
+### Entidades elegidas
+
+#### 1. `User`
+Representa a cualquier persona registrada en el sistema.  
+**Justificación:** Entidad central del dominio. Cubre la **autenticación**
+(email, password, tokens) y el **CRUD de usuarios**.
+
+**Atributos principales:**
+- `id` (Long, PK)
+- `username` (String)
+- `email` (String, único)
+- `password` (String, hasheado)
+- `role` (Enum: UserRole)
+- `createdAt` / `updatedAt` (Timestamps)
+
+---
+
+#### 2. `Player`
+Representa el perfil deportivo de un usuario dentro del sistema.  
+**Justificación:** Es la entidad que identifica a los participantes
+de los torneos con sus datos deportivos específicos. Se relaciona
+con `User` (perfil base) y con `Tournament` (participación).
+
+**Atributos principales:**
+- `id` (Long, PK)
+- `name` (String)
+- `dorsal` (int)
+- `position` (Enum: Position)
+- `participantType` (Enum: ParticipantType)
+- `semester` (int)
+- `available` (boolean)
+
+---
+
+#### 3. `Tournament`
+Representa un torneo creado en el sistema.  
+**Justificación:** Entidad principal del negocio. Cubre el
+**CRUD de torneos** y se relaciona con `User` (organizador)
+y `Player` (participantes).
+
+**Atributos principales:**
+- `id` (Long, PK)
+- `name` (String)
+- `state` (Enum: TournamentState)
+- `organizerId` (FK → User)
+- `createdAt` / `updatedAt` (Timestamps)
+
+---
+
+### Relaciones entre entidades
+
+| Entidad A | Relación | Entidad B | Descripción |
+|-----------|----------|-----------|-------------|
+| `User` | 1:1 | `Player` | Un usuario tiene un perfil de jugador |
+| `User` | 1:N | `Tournament` | Un usuario puede organizar varios torneos |
+| `Player` | N:M | `Tournament` | Un jugador puede participar en varios torneos |
+
+---
+
+### Cobertura de funcionalidades requeridas
+
+| Funcionalidad requerida | Entidad responsable |
+|-------------------------|---------------------|
+| Autenticación           | `User`              |
+| CRUD Usuarios           | `User`              |
+| CRUD Torneos            | `Tournament`        |
+| Participación en torneos| `Player`            |
+
 <div align="center">
 
 **DOSW Company** · Escuela Colombiana de Ingeniería Julio Garavito · 2025
 
-*Desarrollado con ☕ y mucho fútbol*
 
 </div>
