@@ -24,6 +24,8 @@
     <!-- Se eliminó la dependencia de Junit 5 porque spring-boot-starter ya la trae incluida -->
 
     <dependencies>
+
+
         <!-- Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -41,6 +43,13 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
+        </dependency>
+
+        <!-- Swagger/OpenAPI -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.6.0</version>
         </dependency>
 
         <!-- H2 para pruebas -->
@@ -131,5 +140,7 @@
             </plugin>
         </plugins>
     </build>
+
+
 
 </project>
