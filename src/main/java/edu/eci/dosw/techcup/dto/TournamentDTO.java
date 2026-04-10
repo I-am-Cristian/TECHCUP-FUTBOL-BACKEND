@@ -14,18 +14,6 @@ public class TournamentDTO {
 
     public TournamentDTO() {}
 
-    public TournamentDTO(Long id, String name, LocalDate initialDate, LocalDate finalDate,
-                         TournamentState state, Double inscriptionCost, Integer teamsNumber) {
-        this.id = id;
-        this.name = name;
-        this.initialDate = initialDate;
-        this.finalDate = finalDate;
-        this.state = state;
-        this.inscriptionCost = inscriptionCost;
-        this.teamsNumber = teamsNumber;
-    }
-
-    // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -42,8 +30,8 @@ public class TournamentDTO {
     public void setState(TournamentState state) { this.state = state; }
 
     public Double getInscriptionCost() { return inscriptionCost; }
-    public void setInscriptionCost(Double inscriptionCost) { this.inscriptionCost = inscriptionCost; }
+    public void setInscriptionCost(double inscriptionCost) { this.inscriptionCost = inscriptionCost; }
 
     public Integer getTeamsNumber() { return teamsNumber; }
-    public void setTeamsNumber(Integer teamsNumber) { this.teamsNumber = teamsNumber; }
+    public void setTeamsNumber(int teamsNumber) { this.teamsNumber = teamsNumber; }
 }
