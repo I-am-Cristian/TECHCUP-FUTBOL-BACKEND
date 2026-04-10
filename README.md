@@ -521,6 +521,40 @@ y `Player` (participantes).
 | CRUD Torneos            | `Tournament`        |
 | Participación en torneos| `Player`            |
 
+
+## Paso 8. Crear la base de datos PostgreSQL
+
+| CONTAINER ID | IMAGE    | COMMAND                  | CREATED          | STATUS         | PORTS                    | NAMES         |
+|--------------|----------|--------------------------|------------------|----------------|--------------------------|---------------|
+| 61d2c77aac8c | postgres | "docker-entrypoint.s…"   | 32 seconds ago   | Up 29 seconds  | 0.0.0.0:5432->5432/tcp   | postgres-lab8 |
+
+
+
+# Lab 9
+
+## Prueba de API con Postman - GET Usuarios
+
+### Descripción
+Petición para obtener todos los usuarios registrados en el sistema.
+
+### Configuración de la petición
+
+| Campo  | Valor                                  |
+|--------|----------------------------------------|
+| Método | GET                                    |
+| URL    | http://localhost:8080/api/users        |
+| Header | Content-Type: application/json         |
+
+### Resultado obtenido
+
+![GET Usuarios](src/main/java/edu/eci/dosw/techcup/images/PeticionGetUsuarios.png)
+
+### Respuesta esperada
+
+- **Código:** 200 OK
+- **Formato:** JSON
+- **Body:**
+
 <div align="center">
 
 **DOSW Company** · Escuela Colombiana de Ingeniería Julio Garavito · 2025
@@ -528,10 +562,4 @@ y `Player` (participantes).
 
 </div>
 
-
-## Paso 8. Crear la base de datos PostgreSQL
-
-| CONTAINER ID | IMAGE    | COMMAND                  | CREATED          | STATUS         | PORTS                    | NAMES         |
-|--------------|----------|--------------------------|------------------|----------------|--------------------------|---------------|
-| 61d2c77aac8c | postgres | "docker-entrypoint.s…"   | 32 seconds ago   | Up 29 seconds  | 0.0.0.0:5432->5432/tcp   | postgres-lab8 |
 
