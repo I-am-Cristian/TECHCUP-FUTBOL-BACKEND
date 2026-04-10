@@ -28,6 +28,9 @@ public class TournamentService {
     public boolean createTournament(Tournament tournament) {
         log.info("Creando torneo: {}", tournament.getName());
         try {
+            if (tournament.getState() == null) {
+                tournament.setState(TournamentState.DRAFT);
+            }
             tournamentRepository.save(tournament);
             log.info("Torneo creado exitosamente con id: {}", tournament.getId());
             return true;
@@ -87,5 +90,13 @@ public class TournamentService {
                 .stream()
                 .map(tournamentMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    public List<TournamentDTO> findByNameContaining(String name) {
+    log.info("Buscando torneos por nombre: {}", name);
+    return tournamentRepository.findByNameContainingIgnoreCase(name)
+            .stream()
+            .map(tournamentMapper::toDto)
+            .collect(Collectors.toList());
     }
 }

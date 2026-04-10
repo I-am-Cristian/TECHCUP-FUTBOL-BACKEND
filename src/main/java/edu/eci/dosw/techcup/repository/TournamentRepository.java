@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface TournamentRepository extends JpaRepository<Tournament, Long> {
-    List<Tournament> findByNombreContainingIgnoreCase(String nombre);
+    List<Tournament> findByNameContainingIgnoreCase(String name);
 }

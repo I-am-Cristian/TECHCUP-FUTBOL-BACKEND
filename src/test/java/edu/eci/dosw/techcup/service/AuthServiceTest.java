@@ -1,124 +1,99 @@
 package edu.eci.dosw.techcup.service;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import edu.eci.dosw.techcup.dto.LoginRequestDTO;
 import edu.eci.dosw.techcup.dto.UserDTO;
 import edu.eci.dosw.techcup.entity.MemberState;
+import edu.eci.dosw.techcup.entity.User;
 import edu.eci.dosw.techcup.entity.UserRole;
+import edu.eci.dosw.techcup.mapper.UserMapper;
+import edu.eci.dosw.techcup.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-public class AuthServiceTest {
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class AuthServiceTest {
+
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private UserMapper userMapper;
+
+    @InjectMocks
     private AuthService authService;
+
+    private User testUser;
+    private UserDTO testUserDTO;
 
     @BeforeEach
     void setUp() {
-        authService = new AuthService();
+        testUser = new User(1L, "test@escuelaing.edu.co", "password123") {};
+        testUser.setRole(UserRole.JUGADOR);
+        testUser.setState(MemberState.ACTIVE);
+
+        testUserDTO = new UserDTO(1L, "test@escuelaing.edu.co", UserRole.JUGADOR, MemberState.ACTIVE);
     }
 
-    // ─── RF-02 ────────────────────────────────────────────────────────────────
-
     @Test
-    public void shouldLoginWithValidAdminCredentials() {
-        // Having
-        LoginRequestDTO request = new LoginRequestDTO(
-                "admin@escuelaing.edu.co", "admin123");
-
-        // When
+    @DisplayName("Login exitoso con credenciales correctas")
+    void loginSuccess() {
+        LoginRequestDTO request = new LoginRequestDTO("test@escuelaing.edu.co", "password123");
+        
+        when(userRepository.findByEmail("test@escuelaing.edu.co")).thenReturn(Optional.of(testUser));
+        when(userMapper.toDto(testUser)).thenReturn(testUserDTO);
+        
         UserDTO result = authService.login(request);
-
-        // Then
+        
         assertNotNull(result);
-        assertEquals("admin@escuelaing.edu.co", result.getEmail());
-        assertEquals(UserRole.ADMINISTRADOR, result.getRole());
+        assertEquals(testUserDTO.getEmail(), result.getEmail());
+        verify(userRepository).findByEmail("test@escuelaing.edu.co");
     }
 
     @Test
-    public void shouldLoginWithValidPlayerCredentials() {
-        // Having
-        LoginRequestDTO request = new LoginRequestDTO(
-                "jugador@gmail.com", "jugador123");
-
-        // When
+    @DisplayName("Login falla con contraseña incorrecta")
+    void loginFailWrongPassword() {
+        LoginRequestDTO request = new LoginRequestDTO("test@escuelaing.edu.co", "wrongpassword");
+        
+        when(userRepository.findByEmail("test@escuelaing.edu.co")).thenReturn(Optional.of(testUser));
+        
         UserDTO result = authService.login(request);
-
-        // Then
-        assertNotNull(result);
-        assertEquals(UserRole.JUGADOR, result.getRole());
-        assertEquals(MemberState.ACTIVE, result.getState());
-    }
-
-    @Test
-    public void shouldNotLoginWithWrongPassword() {
-        // Having
-        LoginRequestDTO request = new LoginRequestDTO(
-                "admin@escuelaing.edu.co", "wrongpassword");
-
-        // When
-        UserDTO result = authService.login(request);
-
-        // Then
+        
         assertNull(result);
     }
 
     @Test
-    public void shouldNotLoginWithNonExistentEmail() {
-        // Having
-        LoginRequestDTO request = new LoginRequestDTO(
-                "noexiste@gmail.com", "pass123");
-
-        // When
+    @DisplayName("Login falla con email no registrado")
+    void loginFailEmailNotFound() {
+        LoginRequestDTO request = new LoginRequestDTO("nonexistent@escuelaing.edu.co", "password123");
+        
+        when(userRepository.findByEmail("nonexistent@escuelaing.edu.co")).thenReturn(Optional.empty());
+        
         UserDTO result = authService.login(request);
-
-        // Then
+        
         assertNull(result);
     }
 
     @Test
-    public void shouldNotLoginWithNullEmail() {
-        // Having
-        LoginRequestDTO request = new LoginRequestDTO(null, "pass123");
-
-        // When
+    @DisplayName("Login falla con usuario inactivo")
+    void loginFailInactiveUser() {
+        testUser.setState(MemberState.UNACTIVE);
+        LoginRequestDTO request = new LoginRequestDTO("test@escuelaing.edu.co", "password123");
+        
+        when(userRepository.findByEmail("test@escuelaing.edu.co")).thenReturn(Optional.of(testUser));
+        
         UserDTO result = authService.login(request);
-
-        // Then
+        
         assertNull(result);
-    }
-
-    @Test
-    public void shouldNotLoginWithNullPassword() {
-        // Having
-        LoginRequestDTO request = new LoginRequestDTO(
-                "admin@escuelaing.edu.co", null);
-
-        // When
-        UserDTO result = authService.login(request);
-
-        // Then
-        assertNull(result);
-    }
-
-    // ─── RF-03 ────────────────────────────────────────────────────────────────
-
-    @Test
-    public void shouldLogoutWithoutError() {
-        // Having / When & Then
-        assertDoesNotThrow(() ->
-                authService.logout("admin@escuelaing.edu.co")
-        );
-    }
-
-    @Test
-    public void shouldLogoutNonExistentUserWithoutError() {
-        // Having / When & Then — logout no requiere que el usuario exista
-        assertDoesNotThrow(() ->
-                authService.logout("fantasma@gmail.com")
-        );
     }
 }

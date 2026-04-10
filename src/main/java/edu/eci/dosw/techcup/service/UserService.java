@@ -30,7 +30,6 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
-    // ─── RF-01: Registro de usuario ────────────────────────────────────────────
     public UserDTO registerUser(String email, String password) {
         logger.info("Registrando usuario: {}", email);
         validateEmail(email);
@@ -44,7 +43,6 @@ public class UserService {
         return userMapper.toDto(savedUser);
     }
 
-    // ─── RF-04: Gestión de usuarios ────────────────────────────────────────────
     public List<UserDTO> getAllUsers() {
         logger.info("Listando todos los usuarios");
         return userRepository.findAll()
@@ -108,14 +106,15 @@ public class UserService {
         return userMapper.toDto(updatedUser);
     }
 
-    // ─── Helpers ──────────────────────────────────────────────────────────────
     private void validateEmail(String email) {
         if (email == null || (!email.endsWith(ECI_DOMAIN) && !email.endsWith(GMAIL_DOMAIN))) {
-            throw new IllegalArgumentException("Dominio no permitido. Use @escuelaing.edu.co o @gmail.com");
+            throw new TechCupException.InvalidEmailException(
+                    "Dominio no permitido. Use @escuelaing.edu.co o @gmail.com");
         }
         
         if (userRepository.findByEmail(email).isPresent()) {
-            throw new IllegalArgumentException("El correo ya está registrado: " + email);
+            throw new TechCupException.InvalidEmailException(
+                    "El correo ya está registrado: " + email);
         }
     }
 }
