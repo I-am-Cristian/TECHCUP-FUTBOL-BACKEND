@@ -527,3 +527,11 @@ y `Player` (participantes).
 
 
 </div>
+
+
+## Paso 8. Crear la base de datos PostgreSQL
+
+| CONTAINER ID | IMAGE    | COMMAND                  | CREATED          | STATUS         | PORTS                    | NAMES         |
+|--------------|----------|--------------------------|------------------|----------------|--------------------------|---------------|
+| 61d2c77aac8c | postgres | "docker-entrypoint.s…"   | 32 seconds ago   | Up 29 seconds  | 0.0.0.0:5432->5432/tcp   | postgres-lab8 |
+
