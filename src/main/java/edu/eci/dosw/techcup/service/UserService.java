@@ -1,143 +1,120 @@
 package edu.eci.dosw.techcup.service;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import edu.eci.dosw.techcup.dto.UserDTO;
-import edu.eci.dosw.techcup.entity.Manager;
 import edu.eci.dosw.techcup.entity.MemberState;
 import edu.eci.dosw.techcup.entity.User;
 import edu.eci.dosw.techcup.entity.UserRole;
 import edu.eci.dosw.techcup.exception.TechCupException;
+import edu.eci.dosw.techcup.mapper.UserMapper;
+import edu.eci.dosw.techcup.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
-/**
- * Servicio de gestión de usuarios.
- * RF-01: Registro de usuario.
- * RF-04: Gestión — listar, inactivar, suspender, cambiar rol.
- */
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    private static final String ECI_DOMAIN   = "@escuelaing.edu.co";
+    private static final String ECI_DOMAIN = "@escuelaing.edu.co";
     private static final String GMAIL_DOMAIN = "@gmail.com";
 
-    private final Map<Long, User> users = new LinkedHashMap<>();
-    private long idCounter = 1L;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
-    public UserService() {
-        User admin = new Manager(idCounter++, "admin@escuelaing.edu.co", "admin123");
-        admin.setRole(UserRole.ADMINISTRADOR);
-        users.put(admin.getId(), admin);
-
-        User jugador = new Manager(idCounter++, "jugador@gmail.com", "jugador123");
-        users.put(jugador.getId(), jugador);
+    public UserService(UserRepository userRepository, UserMapper userMapper) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
-    // ─── RF-01 ────────────────────────────────────────────────────────────────
-
-    /** Registro desde el Controller — id auto-generado. */
     public UserDTO registerUser(String email, String password) {
         logger.info("Registrando usuario: {}", email);
         validateEmail(email);
-        User newUser = new Manager(idCounter++, email, password);
-        users.put(newUser.getId(), newUser);
-        logger.info("Usuario registrado con id: {}", newUser.getId());
-        return toDTO(newUser);
+        
+        User newUser = userMapper.toEntity(email, password);
+        newUser.setRole(UserRole.JUGADOR);
+        newUser.setState(MemberState.ACTIVE);
+        
+        User savedUser = userRepository.save(newUser);
+        logger.info("Usuario registrado con id: {}", savedUser.getId());
+        return userMapper.toDto(savedUser);
     }
-
-    /** Registro desde Tests — id explícito para controlar el comportamiento. */
-    public UserDTO registerUser(Long id, String email, String password) {
-        logger.info("Registrando usuario con id explícito: {}", id);
-        validateEmail(email);
-        User newUser = new Manager(id, email, password);
-        users.put(newUser.getId(), newUser);
-        return toDTO(newUser);
-    }
-
-    // ─── RF-04 ────────────────────────────────────────────────────────────────
 
     public List<UserDTO> getAllUsers() {
-        logger.info("Listando usuarios. Total: {}", users.size());
-        List<UserDTO> result = new ArrayList<>();
-        users.values().forEach(u -> result.add(toDTO(u)));
-        return result;
+        logger.info("Listando todos los usuarios");
+        return userRepository.findAll()
+                .stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     public UserDTO getUserById(Long id) {
-        logger.info("Buscando usuario id: {}", id);
-        return toDTO(findOrThrow(id));
+        logger.info("Buscando usuario por id: {}", id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new TechCupException.ResourceNotFoundException(
+                        "Usuario no encontrado con id: " + id));
+        return userMapper.toDto(user);
     }
 
     public UserDTO getUserByEmail(String email) {
-        return users.values().stream()
-                .filter(u -> u.getEmail().equalsIgnoreCase(email))
-                .findFirst()
-                .map(this::toDTO)
+        logger.info("Buscando usuario por email: {}", email);
+        return userRepository.findByEmail(email)
+                .map(userMapper::toDto)
                 .orElse(null);
     }
 
     public UserDTO inactivateUser(Long id) {
         logger.info("Inactivando usuario id: {}", id);
-        User user = findOrThrow(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new TechCupException.ResourceNotFoundException(
+                        "Usuario no encontrado con id: " + id));
         user.setState(MemberState.UNACTIVE);
-        return toDTO(user);
+        User updatedUser = userRepository.save(user);
+        return userMapper.toDto(updatedUser);
     }
 
     public UserDTO suspendUser(Long id) {
         logger.info("Suspendiendo usuario id: {}", id);
-        User user = findOrThrow(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new TechCupException.ResourceNotFoundException(
+                        "Usuario no encontrado con id: " + id));
         user.setState(MemberState.SUSPENDED);
-        return toDTO(user);
+        User updatedUser = userRepository.save(user);
+        return userMapper.toDto(updatedUser);
     }
 
     public UserDTO activateUser(Long id) {
         logger.info("Activando usuario id: {}", id);
-        User user = findOrThrow(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new TechCupException.ResourceNotFoundException(
+                        "Usuario no encontrado con id: " + id));
         user.setState(MemberState.ACTIVE);
-        return toDTO(user);
+        User updatedUser = userRepository.save(user);
+        return userMapper.toDto(updatedUser);
     }
 
     public UserDTO changeUserRole(Long id, UserRole newRole) {
         logger.info("Cambiando rol usuario {} a {}", id, newRole);
-        User user = findOrThrow(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new TechCupException.ResourceNotFoundException(
+                        "Usuario no encontrado con id: " + id));
         user.setRole(newRole);
-        return toDTO(user);
-    }
-
-    // ─── Helpers ──────────────────────────────────────────────────────────────
-
-    private User findOrThrow(Long id) {
-        User user = users.get(id);
-        if (user == null) {
-            throw new TechCupException.ResourceNotFoundException(
-                    "Usuario no encontrado con id: " + id);
-        }
-        return user;
+        User updatedUser = userRepository.save(user);
+        return userMapper.toDto(updatedUser);
     }
 
     private void validateEmail(String email) {
-        if (email == null
-                || (!email.endsWith(ECI_DOMAIN) && !email.endsWith(GMAIL_DOMAIN))) {
-            throw new IllegalArgumentException(
+        if (email == null || (!email.endsWith(ECI_DOMAIN) && !email.endsWith(GMAIL_DOMAIN))) {
+            throw new TechCupException.InvalidEmailException(
                     "Dominio no permitido. Use @escuelaing.edu.co o @gmail.com");
         }
-        if (users.values().stream()
-                .anyMatch(u -> u.getEmail().equalsIgnoreCase(email))) {
-            throw new IllegalArgumentException(
+        
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new TechCupException.InvalidEmailException(
                     "El correo ya está registrado: " + email);
         }
-    }
-
-    private UserDTO toDTO(User user) {
-        return new UserDTO(user.getId(), user.getEmail(),
-                user.getRole(), user.getState());
     }
 }
