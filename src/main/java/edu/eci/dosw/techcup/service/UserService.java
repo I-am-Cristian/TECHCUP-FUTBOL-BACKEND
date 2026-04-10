@@ -22,7 +22,6 @@ public class UserService {
     private static final String ECI_DOMAIN = "@escuelaing.edu.co";
     private static final String GMAIL_DOMAIN = "@gmail.com";
 
-    // Inyección de dependencias por constructor
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
@@ -36,10 +35,8 @@ public class UserService {
         logger.info("Registrando usuario: {}", email);
         validateEmail(email);
         
-        User newUser = new User();
-        newUser.setEmail(email);
-        newUser.setPassword(password);
-        newUser.setRole(UserRole.JUGADOR); // Rol por defecto
+        User newUser = userMapper.toEntity(email, password);
+        newUser.setRole(UserRole.JUGADOR);
         newUser.setState(MemberState.ACTIVE);
         
         User savedUser = userRepository.save(newUser);
@@ -49,7 +46,7 @@ public class UserService {
 
     // ─── RF-04: Gestión de usuarios ────────────────────────────────────────────
     public List<UserDTO> getAllUsers() {
-        logger.info("Listando usuarios");
+        logger.info("Listando todos los usuarios");
         return userRepository.findAll()
                 .stream()
                 .map(userMapper::toDto)
@@ -57,7 +54,7 @@ public class UserService {
     }
 
     public UserDTO getUserById(Long id) {
-        logger.info("Buscando usuario id: {}", id);
+        logger.info("Buscando usuario por id: {}", id);
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new TechCupException.ResourceNotFoundException(
                         "Usuario no encontrado con id: " + id));
@@ -65,6 +62,7 @@ public class UserService {
     }
 
     public UserDTO getUserByEmail(String email) {
+        logger.info("Buscando usuario por email: {}", email);
         return userRepository.findByEmail(email)
                 .map(userMapper::toDto)
                 .orElse(null);
@@ -110,22 +108,12 @@ public class UserService {
         return userMapper.toDto(updatedUser);
     }
 
-    public void deleteUser(Long id) {
-        logger.info("Eliminando usuario id: {}", id);
-        if (!userRepository.existsById(id)) {
-            throw new TechCupException.ResourceNotFoundException(
-                    "Usuario no encontrado con id: " + id);
-        }
-        userRepository.deleteById(id);
-    }
-
     // ─── Helpers ──────────────────────────────────────────────────────────────
     private void validateEmail(String email) {
         if (email == null || (!email.endsWith(ECI_DOMAIN) && !email.endsWith(GMAIL_DOMAIN))) {
             throw new IllegalArgumentException("Dominio no permitido. Use @escuelaing.edu.co o @gmail.com");
         }
         
-        // Verificar si el email ya existe en la BD
         if (userRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("El correo ya está registrado: " + email);
         }

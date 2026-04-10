@@ -25,69 +25,65 @@ public class TournamentService {
         this.tournamentMapper = tournamentMapper;
     }
 
-    public TournamentDTO createTournament(TournamentDTO tournamentDTO) {
-        log.info("Creando torneo: {}", tournamentDTO.getName());
-        Tournament tournament = tournamentMapper.toEntity(tournamentDTO);
-        Tournament savedTournament = tournamentRepository.save(tournament);
-        log.info("Torneo creado exitosamente con id: {}", savedTournament.getId());
-        return tournamentMapper.toDto(savedTournament);
+    public boolean createTournament(Tournament tournament) {
+        log.info("Creando torneo: {}", tournament.getName());
+        try {
+            tournamentRepository.save(tournament);
+            log.info("Torneo creado exitosamente con id: {}", tournament.getId());
+            return true;
+        } catch (Exception e) {
+            log.error("Error al crear torneo: {}", e.getMessage());
+            return false;
+        }
     }
 
-    public TournamentDTO updateTournament(Long tournamentId, TournamentDTO tournamentDTO) {
+    public boolean updateTournament(Long tournamentId, Tournament newTournament) {
         log.info("Actualizando torneo id: {}", tournamentId);
         
-        Tournament existingTournament = tournamentRepository.findById(tournamentId)
-                .orElseThrow(() -> new RuntimeException("Torneo no encontrado con id: " + tournamentId));
-        
-        if (existingTournament.getState() == TournamentState.ENDED) {
-            throw new RuntimeException("No se puede actualizar un torneo finalizado");
+        Tournament existingTournament = tournamentRepository.findById(tournamentId).orElse(null);
+        if (existingTournament == null) {
+            log.warn("Torneo no encontrado con id: {}", tournamentId);
+            return false;
         }
         
-        existingTournament.setName(tournamentDTO.getName());
-        existingTournament.setInitialDate(tournamentDTO.getInitialDate());
-        existingTournament.setFinalDate(tournamentDTO.getFinalDate());
-        existingTournament.setState(tournamentDTO.getState());
-        existingTournament.setInscriptionCost(tournamentDTO.getInscriptionCost());
-        existingTournament.setTeamsNumber(tournamentDTO.getTeamsNumber());
+        if (existingTournament.getState() == TournamentState.ENDED) {
+            log.warn("No se puede actualizar un torneo finalizado");
+            return false;
+        }
         
-        Tournament updatedTournament = tournamentRepository.save(existingTournament);
+        newTournament.setId(tournamentId);
+        tournamentRepository.save(newTournament);
         log.info("Torneo actualizado con id: {}", tournamentId);
-        return tournamentMapper.toDto(updatedTournament);
+        return true;
     }
 
-    public void deleteTournament(Long tournamentId) {
+    public boolean deleteTournament(Long tournamentId) {
         log.info("Eliminando torneo id: {}", tournamentId);
         
-        Tournament tournament = tournamentRepository.findById(tournamentId)
-                .orElseThrow(() -> new RuntimeException("Torneo no encontrado con id: " + tournamentId));
+        Tournament tournament = tournamentRepository.findById(tournamentId).orElse(null);
+        if (tournament == null) {
+            log.warn("Torneo no encontrado con id: {}", tournamentId);
+            return false;
+        }
         
-        // Solo eliminar si está en DRAFT
         if (tournament.getState() != TournamentState.DRAFT) {
-            throw new RuntimeException("Solo se pueden eliminar torneos en estado DRAFT");
+            log.warn("Solo se pueden eliminar torneos en estado DRAFT");
+            return false;
         }
         
         tournamentRepository.deleteById(tournamentId);
         log.info("Torneo eliminado con id: {}", tournamentId);
+        return true;
     }
 
-    public TournamentDTO getTournament(Long tournamentId) {
+    public Tournament getTournament(Long tournamentId) {
         log.info("Buscando torneo id: {}", tournamentId);
-        Tournament tournament = tournamentRepository.findById(tournamentId)
-                .orElseThrow(() -> new RuntimeException("Torneo no encontrado con id: " + tournamentId));
-        return tournamentMapper.toDto(tournament);
+        return tournamentRepository.findById(tournamentId).orElse(null);
     }
 
     public List<TournamentDTO> findAll() {
         log.info("Obteniendo todos los torneos");
         return tournamentRepository.findAll()
-                .stream()
-                .map(tournamentMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-    public List<TournamentDTO> findByNameContaining(String name) {
-        log.info("Buscando torneos por nombre: {}", name);
-        return tournamentRepository.findByNombreContainingIgnoreCase(name)
                 .stream()
                 .map(tournamentMapper::toDto)
                 .collect(Collectors.toList());

@@ -10,6 +10,7 @@ public class PlayerMapper {
 
     public PlayerDTO toDto(Player player) {
         if (player == null) return null;
+        
         PlayerDTO dto = new PlayerDTO();
         dto.setId(player.getId());
         dto.setName(player.getName());
@@ -26,6 +27,7 @@ public class PlayerMapper {
 
     public Player toEntity(PlayerDTO dto) {
         if (dto == null) return null;
+        
         Player player = new Player();
         player.setId(dto.getId());
         player.setName(dto.getName());

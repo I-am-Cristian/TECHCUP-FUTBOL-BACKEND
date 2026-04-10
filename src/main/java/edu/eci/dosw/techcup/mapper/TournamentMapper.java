@@ -9,6 +9,7 @@ public class TournamentMapper {
 
     public TournamentDTO toDto(Tournament tournament) {
         if (tournament == null) return null;
+        
         TournamentDTO dto = new TournamentDTO();
         dto.setId(tournament.getId());
         dto.setName(tournament.getName());
@@ -22,6 +23,7 @@ public class TournamentMapper {
 
     public Tournament toEntity(TournamentDTO dto) {
         if (dto == null) return null;
+        
         Tournament tournament = new Tournament();
         tournament.setId(dto.getId());
         tournament.setName(dto.getName());
