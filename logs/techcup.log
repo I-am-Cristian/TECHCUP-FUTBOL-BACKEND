@@ -3665,3 +3665,17 @@ Caused by: org.postgresql.util.PSQLException: FATAL: database "techcup" does not
 2026-04-10T17:41:10.047-05:00  WARN 8732 --- [techcup-backend] [main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
 2026-04-10T17:41:13.395-05:00  WARN 8732 --- [techcup-backend] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
 2026-04-10T17:50:55.505-05:00  WARN 22412 --- [techcup-backend] [main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-10T19:24:02.737-05:00  WARN 3672 --- [techcup-backend] [main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-10T19:24:05.428-05:00  WARN 3672 --- [techcup-backend] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-10T19:25:22.342-05:00  WARN 7392 --- [techcup-backend] [main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-10T19:25:24.905-05:00  WARN 7392 --- [techcup-backend] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-10T19:26:08.773-05:00  WARN 6124 --- [techcup-backend] [main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-10T19:26:11.059-05:00  WARN 6124 --- [techcup-backend] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-10T19:32:33.295-05:00  WARN 18396 --- [techcup-backend] [main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-10T19:32:35.661-05:00  WARN 18396 --- [techcup-backend] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-10T19:32:36.260-05:00  WARN 18396 --- [techcup-backend] [main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 2e86899b-a539-40db-834b-17acab75a4b0
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
