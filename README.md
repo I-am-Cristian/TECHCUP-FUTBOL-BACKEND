@@ -555,6 +555,49 @@ Petición para obtener todos los usuarios registrados en el sistema.
 - **Formato:** JSON
 - **Body:**
 
+
+
+#  Spring Boot Security
+
+##  Configuración
+
+Se agregó la dependencia de Spring Security en el proyecto y se ejecutó la aplicación.  
+Al consumir el endpoint `/users`, ahora se solicita autenticación.
+
+##  Evidencia 1 - Solicitud de autenticación
+![Auth requerida](src/main/java/edu/eci/dosw/techcup/images/SecurityUser.png)
+![Auth requerida](src/main/java/edu/eci/dosw/techcup/images/PeticionGetUsuarios.png)
+
+
+---
+
+##  Autenticación por defecto
+
+- Usuario: `user`
+- Contraseña: generada en consola al iniciar la aplicación.
+
+Se configuró Basic Auth en Postman y se ejecutó nuevamente la petición.
+
+## Evidencia 2 - Acceso con credenciales por defecto
+![Auth requerida](src/main/java/edu/eci/dosw/techcup/images/PeticionUsuariosSeguridad2.png))
+
+---
+
+## Configuración personalizada
+
+Se definieron nuevas credenciales en `application.properties`:
+spring.security.user.name=admin
+spring.security.user.password=1234
+
+
+Se reinició la aplicación y se actualizaron las credenciales en Postman.
+
+##  Evidencia 3 - Acceso con credenciales personalizadas
+![Auth requerida](src/main/java/edu/eci/dosw/techcup/images/PeticionUsuariosSeguridad3.png))
+
+
+---
+
 <div align="center">
 
 **DOSW Company** · Escuela Colombiana de Ingeniería Julio Garavito · 2025
