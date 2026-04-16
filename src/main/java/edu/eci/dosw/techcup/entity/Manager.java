@@ -1,6 +1,7 @@
 package edu.eci.dosw.techcup.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "managers")
