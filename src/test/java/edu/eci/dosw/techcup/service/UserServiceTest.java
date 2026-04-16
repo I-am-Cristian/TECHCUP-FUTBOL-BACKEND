@@ -19,7 +19,6 @@ public class UserServiceTest {
 
     private UserService userService;
 
-    // El servicio crea 2 usuarios dummy (ids 1 y 2)
     private static final Long EXISTING_ID     = 1L;
     private static final Long NON_EXISTING_ID = 999L;
 
@@ -33,13 +32,13 @@ public class UserServiceTest {
 
     @Test
     public void shouldRegisterUserWithEciEmail() {
-        // Having
+
         String email = "juan.velez@escuelaing.edu.co";
 
-        // When
+
         UserDTO user = userService.registerUser(email, "pass123");
 
-        // Then
+     
         assertNotNull(user);
         assertEquals(email, user.getEmail());
         assertEquals(MemberState.ACTIVE, user.getState());
@@ -86,7 +85,6 @@ public class UserServiceTest {
         );
     }
 
-    // ─── RF-04 ────────────────────────────────────────────────────────────────
 
     @Test
     public void shouldGetAllRegisteredUsers() {

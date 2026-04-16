@@ -42,7 +42,6 @@ public class SecurityConfig {
                 .addHeaderWriter(new StaticHeadersWriter("X-XSS-Protection", "1; mode=block"))
             )
             
-            // Configuración de autorización
             .authorizeHttpRequests(auth -> auth
                 // Endpoints PÚBLICOS (sin autenticación)
                 .requestMatchers("/api/users/register", "/api/auth/login", "/api/auth/logout").permitAll()
