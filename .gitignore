@@ -31,4 +31,16 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Logs ###
 logs/
+*.log
+
+### Archivos innecesarios ###
+compile_output.txt
+test_output.txt
+git checkout develop
+
+### Sistema operativo ###
+.DS_Store
+Thumbs.db
