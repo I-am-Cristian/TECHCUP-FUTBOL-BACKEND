@@ -5683,3 +5683,11 @@ Caused by: org.postgresql.util.PSQLException: ERROR: duplicate key value violate
 	at org.hibernate.engine.jdbc.internal.ResultSetReturnImpl.executeUpdate(ResultSetReturnImpl.java:194) ~[hibernate-core-6.6.45.Final.jar:6.6.45.Final]
 	... 83 common frames omitted
 
+2026-04-16T00:26:06.814-05:00  WARN 24184 --- [techcup-backend] [main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-16T00:26:08.012-05:00  WARN 24184 --- [techcup-backend] [main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
+2026-04-16T00:26:08.012-05:00  WARN 24184 --- [techcup-backend] [main] o.h.engine.jdbc.spi.SqlExceptionHelper   : constraint "ukpnvtwliis6p05pn6i3ndjrqt2" of relation "permissions" does not exist, skipping
+2026-04-16T00:26:08.021-05:00  WARN 24184 --- [techcup-backend] [main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
+2026-04-16T00:26:08.022-05:00  WARN 24184 --- [techcup-backend] [main] o.h.engine.jdbc.spi.SqlExceptionHelper   : constraint "ukofx66keruapi6vyqpv6f2or37" of relation "roles" does not exist, skipping
+2026-04-16T00:26:08.031-05:00  WARN 24184 --- [techcup-backend] [main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
+2026-04-16T00:26:08.031-05:00  WARN 24184 --- [techcup-backend] [main] o.h.engine.jdbc.spi.SqlExceptionHelper   : constraint "uk6dotkott2kjsp8vw4d0m25fb7" of relation "users" does not exist, skipping
+2026-04-16T00:26:08.546-05:00  WARN 24184 --- [techcup-backend] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
