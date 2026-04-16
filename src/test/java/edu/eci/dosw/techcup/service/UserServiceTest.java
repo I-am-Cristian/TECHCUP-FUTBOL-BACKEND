@@ -1,5 +1,15 @@
 package edu.eci.dosw.techcup.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import edu.eci.dosw.techcup.dto.UserDTO;
 import edu.eci.dosw.techcup.entity.Manager;
 import edu.eci.dosw.techcup.entity.MemberState;
@@ -16,13 +26,35 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+public class UserServiceTest {
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+    private UserService userService;
+
+    private static final Long EXISTING_ID     = 1L;
+    private static final Long NON_EXISTING_ID = 999L;
+
+    @BeforeEach
+    void setUp() {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        userService = new UserService(passwordEncoder);
+    }
+
+    // ─── RF-01 ────────────────────────────────────────────────────────────────
+
+    @Test
+    public void shouldRegisterUserWithEciEmail() {
+
+        String email = "juan.velez@escuelaing.edu.co";
+
+
+        UserDTO user = userService.registerUser(email, "pass123");
+
+     
+        assertNotNull(user);
+        assertEquals(email, user.getEmail());
+        assertEquals(MemberState.ACTIVE, user.getState());
+        assertEquals(UserRole.JUGADOR, user.getRole());
+    }
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -33,8 +65,45 @@ class UserServiceTest {
     @Mock
     private UserMapper userMapper;
 
-    @InjectMocks
-    private UserService userService;
+    @Test
+    public void shouldNotRegisterUserWithInvalidEmailDomain() {
+        // Having / When & Then
+        assertThrows(IllegalArgumentException.class, () ->
+                userService.registerUser("usuario@hotmail.com", "pass")
+        );
+    }
+
+    @Test
+    public void shouldNotRegisterUserWithNullEmail() {
+        // Having / When & Then
+        assertThrows(IllegalArgumentException.class, () ->
+                userService.registerUser(null, "pass")
+        );
+    }
+
+    @Test
+    public void shouldNotRegisterDuplicateEmail() {
+        // Having
+        String email = "nuevo@escuelaing.edu.co";
+        userService.registerUser(email, "pass1");
+
+        // When & Then
+        assertThrows(IllegalArgumentException.class, () ->
+                userService.registerUser(email, "pass2")
+        );
+    }
+
+
+    @Test
+    public void shouldGetAllRegisteredUsers() {
+        // Having — 2 dummy + 3 nuevos = 5
+        userService.registerUser("ana@escuelaing.edu.co", "p1");
+        userService.registerUser("pablo@gmail.com", "p2");
+        userService.registerUser("sara@escuelaing.edu.co", "p3");
+
+        // When & Then
+        assertEquals(5, userService.getAllUsers().size());
+    }
 
     private User testUser;
     private UserDTO testUserDTO;
