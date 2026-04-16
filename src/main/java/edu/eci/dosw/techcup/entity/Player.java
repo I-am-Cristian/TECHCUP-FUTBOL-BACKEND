@@ -1,29 +1,48 @@
 package edu.eci.dosw.techcup.entity;
 
-public class Player {
+import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
-    private Long id;
+@Entity
+@Table(name = "players")
+public class Player extends User {
+
+    @Column(nullable = false, length = 100)
     private String name;
+
+    @Column(nullable = false)
     private int dorsal;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
     private Position position;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "participant_type", nullable = false, length = 30)
     private ParticipantType participantType;
+
+    @Column(nullable = false)
     private int semester;
+
+    @Column(nullable = false)
     private boolean available;
+
+    @ManyToMany(mappedBy = "players")
+    private List<Tournament> tournaments = new ArrayList<>();
 
     public Player() {}
 
-    public Player(Long id, String name, int dorsal, Position position,
-                  ParticipantType participantType) {
-        this.id = id;
+    public Player(Long id, String email, String password, String name, int dorsal, 
+                  Position position, ParticipantType participantType) {
+        super(id, email, password);
         this.name = name;
         this.dorsal = dorsal;
         this.position = position;
         this.participantType = participantType;
         this.available = false;
+        this.semester = 1;
     }
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
@@ -44,4 +63,7 @@ public class Player {
 
     public boolean isAvailable() { return available; }
     public void setAvailable(boolean available) { this.available = available; }
+
+    public List<Tournament> getTournaments() { return tournaments; }
+    public void setTournaments(List<Tournament> tournaments) { this.tournaments = tournaments; }
 }

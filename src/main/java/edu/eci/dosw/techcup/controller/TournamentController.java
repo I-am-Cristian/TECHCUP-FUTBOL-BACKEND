@@ -1,6 +1,6 @@
 package edu.eci.dosw.techcup.controller;
 
-import edu.eci.dosw.techcup.entity.Tournament;
+import edu.eci.dosw.techcup.dto.TournamentDTO;
 import edu.eci.dosw.techcup.service.TournamentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -8,48 +8,57 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/tournaments")
 @Tag(name = "Torneos", description = "Operaciones relacionadas con torneos")
 public class TournamentController {
 
-    private TournamentService tournamentService;
+    private final TournamentService tournamentService;
 
     public TournamentController(TournamentService tournamentService) {
         this.tournamentService = tournamentService;
     }
 
     @GetMapping
-    @Operation(summary = "Obtener todos los torneos", description = "Retorna la lista de todos los torneos")
-    public ResponseEntity<?> findAll(){
+    @Operation(summary = "Obtener todos los torneos")
+    public ResponseEntity<List<TournamentDTO>> findAll() {
         return ResponseEntity.ok(tournamentService.findAll());
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener torneo por ID", description = "Retorna un torneo específico")
-    public ResponseEntity<?> findById(@PathVariable Long id){
-        Tournament tournament = tournamentService.getTournament(id);
-        return (tournament == null) ? ResponseEntity.notFound().build() : ResponseEntity.ok(tournament);
+    @Operation(summary = "Obtener torneo por ID")
+    public ResponseEntity<TournamentDTO> findById(@PathVariable Long id) {
+        TournamentDTO dto = tournamentService.getTournament(id);
+        return (dto == null)
+                ? ResponseEntity.notFound().build()
+                : ResponseEntity.ok(dto);
     }
 
     @PostMapping
-    @Operation(summary = "Crear torneo", description = "Crea un nuevo torneo en estado DRAFT")
-    public ResponseEntity<?> save(@RequestBody Tournament tournament){
-        boolean response = tournamentService.createTournament(tournament);
-        return response ? ResponseEntity.status(HttpStatus.CREATED).body(tournament) : ResponseEntity.badRequest().build();
+    @Operation(summary = "Crear torneo")
+    public ResponseEntity<TournamentDTO> save(@RequestBody TournamentDTO tournamentDTO) {
+        TournamentDTO created = tournamentService.createTournament(tournamentDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Actualizar torneo", description = "Actualiza un torneo existente")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Tournament tournament){
-        boolean response = tournamentService.updateTournament(id, tournament);
-        return response ? ResponseEntity.ok(tournament) : ResponseEntity.notFound().build();
+    @Operation(summary = "Actualizar torneo")
+    public ResponseEntity<TournamentDTO> update(@PathVariable Long id,
+                                                @RequestBody TournamentDTO tournamentDTO) {
+        TournamentDTO updated = tournamentService.updateTournament(id, tournamentDTO);
+        return (updated == null)
+                ? ResponseEntity.notFound().build()
+                : ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar torneo", description = "Elimina un torneo en estado DRAFT")
-    public ResponseEntity<?> delete(@PathVariable Long id){
-        boolean response = tournamentService.deleteTournament(id);
-        return response ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    @Operation(summary = "Eliminar torneo en estado DRAFT")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        boolean deleted = tournamentService.deleteTournament(id);
+        return deleted
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }

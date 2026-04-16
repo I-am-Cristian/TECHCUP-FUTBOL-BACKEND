@@ -1,5 +1,9 @@
 package edu.eci.dosw.techcup.entity;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "managers")
 public class Manager extends User {
 
     public Manager() {}
