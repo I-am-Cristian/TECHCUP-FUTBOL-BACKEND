@@ -1,11 +1,15 @@
 package edu.eci.dosw.techcup.controller;
 
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,6 +42,12 @@ public class AuthController {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.authService = authService;
+    }
+
+    @GetMapping("/csrf")
+    @Operation(summary = "Obtener token CSRF", description = "Retorna el token CSRF usado en solicitudes POST/PUT/DELETE")
+    public ResponseEntity<Map<String, String>> csrf(CsrfToken token) {
+        return ResponseEntity.ok(Map.of("token", token.getToken()));
     }
 
     @PostMapping("/login")
