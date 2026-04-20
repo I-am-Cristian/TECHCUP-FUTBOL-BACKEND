@@ -600,9 +600,7 @@ Se reinició la aplicación y se actualizaron las credenciales en Postman.
 
 <div align="center">
 
-**DOSW Company** · Escuela Colombiana de Ingeniería Julio Garavito · 2025
-
-
+**DOSW Company** · Escuela Colombiana de Ingeniería Julio Garavito · 2025.
 </div>
 
 
